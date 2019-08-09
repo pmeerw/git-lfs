@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# Strip out CI environment variables which cause tests to fail.
+unset $(env | grep -E '^GIT(HUB)?_' | sed -e 's/=.*$//')
+
 GOIMPORTS="goimports"
 if [ "appveyor" = "$USERNAME" ]; then
   GOIMPORTS="C:\\Users\\appveyor\\go\\bin\\goimports"

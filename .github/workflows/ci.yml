@@ -1,0 +1,39 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  build-default:
+    name: Build with default Git
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - run: script/cibuild
+  build-latest:
+    name: Build with latest Git
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - run: git clone -b master https://github.com/git/git.git "$HOME/git"
+    - run: find $GITHUB_WORKSPACE -ls
+    - run: find $HOME -ls
+    - run: cd "$HOME/git" && make -j2 && make install
+    - run: script/cibuild
+  build-earliest:
+    name: Build with earliest Git
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - run: git clone -b v2.0.0 https://github.com/git/git.git "$HOME/git"
+    - run: find $GITHUB_WORKSPACE -ls
+    - run: find $HOME -ls
+    - run: cd "$HOME/git" && make -j2 && make install
+    - run: script/cibuild
